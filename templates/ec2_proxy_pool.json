@@ -35,7 +35,7 @@
             "printf \"[default]\\ncredential_source = Ec2InstanceMetadata\\noutput = json\\nregion = us-east-1\" > /root/.aws/config\n",
             "count=1\n",
             "aws ec2 describe-instances --filters Name=tag:secondary_proxy,Values=* --region us-east-1 --query \"Reservations[*].Instances[*].PrivateIpAddress\" --output=text > /tmp/proxies.txt\n",
-            "while IFS= read -r line; do echo \" server ip-$count $line:8888\" >> /tmp/haproxy.cfg; let count=$count+1; done < /tmp/proxies.txt\n",
+            "while IFS= read -r line; do echo \" server ip-$count $line:8080\" >> /tmp/haproxy.cfg; let count=$count+1; done < /tmp/proxies.txt\n",
             "cp /tmp/haproxy.cfg /etc/haproxy/haproxy.cfg\n",
             "systemctl enable haproxy\n",
             "systemctl start haproxy\n"
