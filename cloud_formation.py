@@ -99,8 +99,8 @@ class CloudFormationTemplateCreator:
 
     def get_ec2_ips(self, region_name='us-east-1'):
         client = boto3.client('ec2', region_name=region_name)
-        proxy_file = open(self.outputs_dir + 'proxies.txt','w')
-        instance_data = client.describe_instances(MaxResults=50, Filters=[{'Name': 'instance-state-name', 'Values': ['running']},{'Name':'tag:proxy_slave','Values':['*']}])
+        proxy_file = open(self.outputs_dir + 'secondary_proxies.txt','w')
+        instance_data = client.describe_instances(MaxResults=50, Filters=[{'Name': 'instance-state-name', 'Values': ['running']},{'Name':'tag:secondary_proxy','Values':['*']}])
         for instance in instance_data['Reservations']:
             proxy_file.write(instance['Instances'][0]['NetworkInterfaces'][0]['Association']['PublicIp'] + '\n')
 
@@ -122,11 +122,21 @@ class CloudFormationTemplateCreator:
 
         return key_pair_name
 
+    def get_primary_proxy(self,region_name='us-east-1'):
+        client = boto3.client('ec2', region_name=region_name)
+        instance_data = client.describe_instances(MaxResults=50,
+                                                 Filters=[{'Name': 'instance-state-name', 'Values': ['running']},
+                                                          {'Name': 'tag:primary_proxy', 'Values': ['*']}])
+        proxy_file = open(self.outputs_dir + 'primary_proxy.txt', 'w')
+        for instance in instance_data['Reservations']:
+            proxy_file.write(instance['Instances'][0]['NetworkInterfaces'][0]['Association']['PublicIp'])
+            print (instance['Instances'][0]['NetworkInterfaces'][0]['Association']['PublicIp'])
 
     def start_cloud_formation(self,num_instances):
         stack_file = self.create_proxy_file(num_instances)
         print(self.launch_cloud_formation_stack(stack_file))
         self.get_ec2_ips()
+        self.get_primary_proxy()
 
 
 if __name__ == "__main__":
