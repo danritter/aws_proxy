@@ -32,6 +32,7 @@
             "yum update -y\n",
             "yum install -y haproxy\n",
             "wget https://raw.githubusercontent.com/danritter/aws_proxy/master/templates/haproxy.cfg -O /tmp/haproxy.cfg\n",
+            "mkdir /root/.aws\n",
             "printf \"[default]\\ncredential_source = Ec2InstanceMetadata\\noutput = json\\nregion = us-east-1\" > /root/.aws/config\n",
             "count=1\n",
             "aws ec2 describe-instances --filters Name=tag:secondary_proxy,Values=* --region us-east-1 --query \"Reservations[*].Instances[*].PrivateIpAddress\" --output=text > /tmp/proxies.txt\n",
