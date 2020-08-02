@@ -1,0 +1,11 @@
+{
+  "Properties": {
+    "SourceSecurityGroupName": { "Ref" : "SecurityGroup" },
+    "FromPort": "1",
+    "IpProtocol": "tcp",
+    "ToPort": "65535",
+    "GroupName": { "Ref" : "SecurityGroup" }
+  },
+  "Type": "AWS::EC2::SecurityGroupIngress",
+  "DependsOn" : "SecurityGroup"
+}

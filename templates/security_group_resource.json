@@ -1,0 +1,32 @@
+{
+  "Properties": {
+    "GroupDescription": "Allow only tcp port",
+    "SecurityGroupIngress": [
+      {
+        "CidrIp": "",
+        "FromPort": "22",
+        "IpProtocol": "tcp",
+        "ToPort": "22"
+      },
+      {
+        "CidrIp": "",
+        "FromPort": "8888",
+        "IpProtocol": "tcp",
+        "ToPort": "8888"
+      },
+      {
+        "CidrIp": "",
+        "FromPort": "5000",
+        "IpProtocol": "tcp",
+        "ToPort": "5000"
+      },
+      {
+        "CidrIp": "",
+        "FromPort": "9999",
+        "IpProtocol": "tcp",
+        "ToPort": "9999"
+      }
+      ]
+  },
+  "Type": "AWS::EC2::SecurityGroup"
+}

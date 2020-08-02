@@ -1,0 +1,41 @@
+{
+  "Properties": {
+    "ImageId": {
+      "Fn::FindInMap": [
+        "RegionMap",
+        {
+          "Ref": "AWS::Region"
+        },
+        "AMI"
+      ]
+    },
+    "InstanceType": "t3.nano",
+    "KeyName": "dan_proxy_kp",
+    "SecurityGroups": [
+      {
+        "Ref": "SecurityGroup"
+      }
+    ],
+    "Tags": [
+      {
+        "Key": "secondary_proxy",
+        "Value": "True"
+      }
+    ],
+    "UserData": {
+      "Fn::Base64": {
+        "Fn::Join": [
+          "",
+          [
+            "#!/bin/bash -xe\n",
+            "yum update -y\n",
+            "yum install -y httpd\n",
+            "wget https://raw.githubusercontent.com/danritter/aws_proxy/master/templates/apache.cfg -O /etc/httpd/conf/httpd.conf\n",
+            "systemctl start httpd.service\n"
+          ]
+        ]
+      }
+    }
+  },
+  "Type": "AWS::EC2::Instance"
+}

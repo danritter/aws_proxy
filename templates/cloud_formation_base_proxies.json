@@ -1,0 +1,12 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Launch an EC2 instances to proxy requests",
+  "Mappings": {
+    "RegionMap": {
+      "us-east-2": {
+        "AMI": "ami-026dea5602e368e96"
+      }
+    }
+  },
+  "Resources": {}
+}

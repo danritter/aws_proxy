@@ -1,0 +1,14 @@
+{
+         "Type": "AWS::IAM::Policy",
+         "Properties": {
+            "PolicyName": "myDummy",
+            "PolicyDocument": {
+               "Statement": [{
+                  "Effect": "Allow",
+                  "Action": "ec2:DescribeInstances",
+                  "Resource": "*"
+               }]
+            },
+            "Roles": [{ "Ref": "ProxyInstanceRole" }]
+         }
+}
