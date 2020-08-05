@@ -8,6 +8,7 @@ import os
 import boto3
 import botocore
 import time
+import sys
 
 class CloudFormationTemplateCreator:
 
@@ -50,6 +51,7 @@ class CloudFormationTemplateCreator:
         cf_json['Resources']['ProxyInstanceRole'] = json.load(open(self.inputs_dir + 'instance_role.json'))
         cf_json['Resources']['ProxyInstancePolicy'] = json.load(open(self.inputs_dir + 'instance_policy.json'))
         cf_json['Resources']['ProxyInstanceProfile'] = json.load(open(self.inputs_dir + 'instance_profile.json'))
+        cf_json['Parameters'] = json.load(open(self.inputs_dir + 'cf_parameters.json'))
         return self.write_cf_json(cf_json)
 
     def get_public_ip(self):
@@ -141,6 +143,10 @@ class CloudFormationTemplateCreator:
 
 if __name__ == "__main__":
 
-    CloudFormationTemplateCreator().start_cloud_formation(3)
-    #CloudFormationTemplateCreator().stop_cloud_formation_stack()
+    if sys.argv[1] == 'start':
+        print ('Starting')
+        CloudFormationTemplateCreator().start_cloud_formation(3)
+    if sys.argv[1] == 'stop':
+        print ('Stoping')
+        CloudFormationTemplateCreator().stop_cloud_formation_stack()
 

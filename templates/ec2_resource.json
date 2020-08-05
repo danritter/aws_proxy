@@ -22,20 +22,7 @@
         "Value": "True"
       }
     ],
-    "UserData": {
-      "Fn::Base64": {
-        "Fn::Join": [
-          "",
-          [
-            "#!/bin/bash -xe\n",
-            "yum update -y\n",
-            "yum install -y httpd\n",
-            "wget https://raw.githubusercontent.com/danritter/aws_proxy/master/templates/httpd.cfg -O /etc/httpd/conf/httpd.conf\n",
-            "systemctl start httpd.service\n"
-          ]
-        ]
-      }
-    }
+    "UserData": {"Ref": "EC2ProxyCommands"}
   },
   "Type": "AWS::EC2::Instance"
 }
