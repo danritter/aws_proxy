@@ -12,10 +12,11 @@ import sys
 
 class CloudFormationTemplateCreator:
 
-    inputs_dir = 'templates/'
-    outputs_dir = 'outputs/'
-
     def __init__(self,region):
+        self.inputs_dir = 'templates/'
+        self.outputs_dir = 'outputs/' + region + '/'
+        if not os.path.exists(self.outputs_dir):
+            os.mkdir(self.outputs_dir)
         self.region = region
 
     def get_security_group_resource(self):
@@ -159,7 +160,7 @@ class CloudFormationTemplateCreator:
 
 
     def test_secondary_proxies(self):
-        proxies = open('outputs/secondary_proxies.txt').read().splitlines()
+        proxies = open(self.outputs_dir + 'secondary_proxies.txt').read().splitlines()
         valid_proxies = []
         for proxy in proxies:
             proxy = 'http://' + proxy + ':8080'
@@ -180,8 +181,8 @@ class CloudFormationTemplateCreator:
         return return_string
 
     def test_primary_proxy(self):
-        primary_proxy = 'http://' + open('outputs/primary_proxy.txt').read() + ':8080'
-        secondary_proxies = list(set(open('outputs/secondary_proxies.txt').read().splitlines()))
+        primary_proxy = 'http://' + open(self.outputs_dir + 'primary_proxy.txt').read() + ':8080'
+        secondary_proxies = list(set(open(self.outputs_dir + 'secondary_proxies.txt').read().splitlines()))
         valid_proxies = []
 
         for i in range(0,len(secondary_proxies)):
@@ -209,37 +210,59 @@ class CloudFormationTemplateCreator:
     def get_proxy_health(self):
         return  self.test_secondary_proxies() + '\n' + self.test_primary_proxy()
 
+    def cleanup(self):
+        os.system("rm outputs/{0}/cf_json*.json 2>/dev/null".format(self.region))
+
 
 
 if __name__ == "__main__":
 
     supported_regions = ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']
+    supported_ops = ['cleanup','health','status','start','stop']
     region = 'us-east-1'
+    num_proxies = 3
 
     if len(sys.argv) == 2:
-        operation = sys.argv[1]
+        op = sys.argv[1]
 
     elif len(sys.argv) == 3:
-        print(sys.argv)
-        operation = sys.argv[1]
+        op = sys.argv[1]
         region = sys.argv[2]
-        if region not in supported_regions:
-            region = 'us-east-1'
+
+    elif len(sys.argv) == 4 and sys.argv[1] == 'start':
+        op = sys.argv[1]
+        region = sys.argv[2]
+        num_proxies = int(sys.argv[3])
+        if num_proxies < 1 or num_proxies > 639:
+            print('Number of proxies invalid!')
+            sys.exit(0)
     else:
+        print ('Invalid Syntax')
+        sys.exit(0)
+
+    if region not in supported_regions:
+        print('Region has not been tested or is invalid.')
+        sys.exit(0)
+
+    if op not in supported_ops:
+        print ('Operation not supported')
         sys.exit(0)
 
     cf = CloudFormationTemplateCreator(region)
 
-    if sys.argv[1] == 'health':
+    if op == 'cleanup':
+        cf.cleanup()
+
+    if op == 'health':
         print(cf.get_proxy_health())
 
-    if sys.argv[1] == 'status':
+    if op == 'status':
         print (cf.get_stack_status())
 
-    if sys.argv[1] == 'start':
+    if op == 'start':
         print ('Starting')
-        cf.start_cloud_formation(3)
+        cf.start_cloud_formation(num_proxies)
 
-    if sys.argv[1] == 'stop':
+    if op == 'stop':
         print ('Stoping')
         cf.stop_cloud_formation_stack()
